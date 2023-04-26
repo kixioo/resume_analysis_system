@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:mysql://192.168.220.129/test1?useSSL=false&characterEncoding=utf-8&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456a
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+  redis:
+    host: 192.168.220.129
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#阿里短信发送
+ali:
+  #ID
+  accessKey_id: LTAI5tNYh8zpn7ogsdm4TB8u
+  #key
+  accessKey_secret: Mbz7otfd6W8N1utu9TDqyyQHh1McpA
+  #短信签名名称
+  signname: 智能简历分析系统
+  #短信模板ID
+  templatecode: SMS_276471094
+

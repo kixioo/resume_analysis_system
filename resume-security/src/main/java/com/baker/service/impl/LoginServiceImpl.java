@@ -1,0 +1,59 @@
+package com.baker.service.impl;
+
+import com.alibaba.fastjson2.JSON;
+import com.baker.common.ResponseResult;
+import com.baker.domain.LoginUser;
+import com.baker.domain.User;
+import com.baker.service.LoginServcie;
+import com.baker.until.JwtUtil;
+import com.baker.until.RedisCache;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Objects;
+
+@Service
+public class LoginServiceImpl implements LoginServcie {
+
+    @Resource
+    private AuthenticationManager authenticationManager;
+    @Resource
+    private RedisCache redisCache;
+
+    @Override
+    public ResponseResult login(User user) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getPhoneNumber(),user.getPassword());
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+        if(Objects.isNull(authenticate)){
+            System.out.println("密码错误");
+            throw new RuntimeException("用户名或密码错误");
+        }
+        //使用userid生成token
+        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        String userId = loginUser.getUser().getId().toString();
+        String jwt = JwtUtil.createJWT(userId);
+        //authenticate存入redis
+        var s = JSON.toJSONString(loginUser);
+        redisCache.setCacheObject("login:"+userId,s);
+        //把token响应给前端
+        HashMap<String,String> map = new HashMap<>();
+        map.put("token",jwt);
+        return new ResponseResult(200,"登陆成功",map);
+    }
+
+    @Override
+    public ResponseResult logout() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        Long userid = loginUser.getUser().getId();
+        redisCache.deleteObject("login:"+userid);
+        return new ResponseResult(200,"退出成功");
+    }
+
+
+}
