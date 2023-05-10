@@ -6,10 +6,13 @@ import com.baker.service.LoginServcie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 public class LoginController {
 
-    @Autowired
+    @Resource
     private LoginServcie loginServcie;
 
     @PostMapping("/user/login")

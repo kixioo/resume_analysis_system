@@ -23,6 +23,10 @@ public class ResponseResult<T> {
         this.msg = msg;
     }
 
+    public static <T> ResponseResult<T>  ok(T o){
+        return new ResponseResult<T>(200,o);
+    }
+
     public ResponseResult(Integer code, T data) {
         this.code = code;
         this.data = data;
