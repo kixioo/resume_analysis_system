@@ -1,6 +1,7 @@
 package com.baker.Service.Impl;
 
 import com.baker.Service.ResumeService;
+import com.baker.Utils.Content;
 import com.baker.common.ResponseResult;
 import com.baker.domain.LoginUser;
 import com.baker.pojo.CallableList;
@@ -17,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
@@ -29,17 +29,12 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static com.baker.Utils.Content.*;
+
 @Service
 public class ResumeServiceImpl implements ResumeService {
 
-    private final static String analysisDocxApi = "/getInformation/file/docx/";
-    private final static String analysisImgApi = "/getInformation/file/img/";
     private final static RestTemplate restTemplate = new RestTemplate();
-    private static final String fileName = "fileName";
-    private static final String fileData = "data";
-    private static final String fileTime = "createDate";
-    private static final String fileCreateUid = "createUid";
-    private static final String fileType = "type";
     private static final int DOCX = 1;
 
     private static final int IMG = 2;
@@ -53,6 +48,7 @@ public class ResumeServiceImpl implements ResumeService {
 
     private final CallableList<Map<String ,Object>> zipAnalysisList;
 
+
     public ResumeServiceImpl(@Value("${resume.analysis.host}") String resumeUrl) {
 
         Assert.hasText(resumeUrl, "resume_analysis host cannot empty");
@@ -60,50 +56,28 @@ public class ResumeServiceImpl implements ResumeService {
         ResumeServiceImpl.resumeUrl = resumeUrl;
 
         //加载普通文件处理流程
-        analysisList = new CallableList<>(i->{
-            ResponseEntity<String> r;
-            if((int)i.get(fileType)==DOCX) {
-                r = restTemplate.postForEntity(resumeUrl + analysisDocxApi + i.get(fileName)
-                        , new HttpEntity<>(i.get(fileData), null), String.class);
-            }else if((int)i.get(fileType)==IMG){
-                r = restTemplate.postForEntity(resumeUrl + analysisImgApi + i.get(fileName)
-                        , new HttpEntity<>(i.get(fileData), null), String.class);
-            }else {
-                return;
-            }
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                var information = mapper.readValue(r.getBody(),ResumeInformation.class);
-                information.setCreateUid((String) i.get(fileCreateUid));
-                information.setCreateDate((Date) i.get(fileTime));
-                mongoTemplate.insert(information);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        zipAnalysisList = new CallableList<>(i-> unzip((byte[]) i.get(fileData), (String) i.get(fileCreateUid), (Date) i.get(fileTime)));
+        analysisList = new CallableList<>(this::ResumeInformationHandler);
+        zipAnalysisList = new CallableList<>(this::unzip);
     }
 
     @Override
-    public ResponseResult<String> uploadFile(int type, byte[] data, String originalFilename) {
-        Map<String,Object> map = new HashMap<>();
-        map.put(fileData,data);
-        map.put(fileName,originalFilename);
-        map.put(fileType,type);
+    public ResponseResult<String> uploadFile(byte[] data, String originalFilename) {
         String uid = ((LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser().getPhoneNumber();
-        map.put(fileCreateUid,uid);
-        map.put(fileTime,new Date(System.currentTimeMillis()));
+        Integer type = typeMap.get(originalFilename.substring(originalFilename.lastIndexOf(".")+1));
+        if(type==null) return ResponseResult.fail("fail");
+        var map = getParameterMap(uid);
+        map.put(fileName,originalFilename);
+        map.put(fileType, type);
+        map.put(fileData,data);
         analysisList.add(map);
         return ResponseResult.ok("success");
     }
 
     @Override
-    public ResponseResult<String> uploadCompressFile(MultipartFile resume) throws IOException {
-        Map<String,Object> map = new HashMap<>();
+    public ResponseResult<String> uploadCompressFile(byte[] data, String originalFilename) {
         String uid = ((LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser().getPhoneNumber();
-        map.put(fileData,resume.getBytes());
-        map.put(fileCreateUid,uid);
-        map.put(fileTime,new Date(System.currentTimeMillis()));
+        var map = getParameterMap(uid);
+        map.put(fileData,data);
         zipAnalysisList.add(map);
         return ResponseResult.ok("success");
     }
@@ -139,10 +113,17 @@ public class ResumeServiceImpl implements ResumeService {
         return ResponseResult.ok(s);
     }
 
+    public Map<String,Object> getParameterMap(String uid){
+        Map<String,Object> map = new HashMap<>();
+        map.put(fileCreateUid,uid);
+        map.put(fileTime,new Date(System.currentTimeMillis()));
+        return map;
+    }
 
 
 
-    public void unzip(byte[] zipData,String fileCreateUid,Date fileTime) {
+    public void unzip(Map<String,Object> map) {
+        byte[] zipData = (byte[]) map.get(fileData);
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zipData);
              ZipInputStream zis = new ZipInputStream(byteArrayInputStream)) {
             ZipEntry entry;
@@ -157,33 +138,44 @@ public class ResumeServiceImpl implements ResumeService {
                 byte[] fileData = byteArrayOutputStream.toByteArray();
 
                 // 在这里处理文件数据
-                ResponseEntity<String> r;
-                if(fileName.endsWith("docx")){
-                    r = restTemplate.postForEntity(resumeUrl + analysisDocxApi + fileName
-                            , new HttpEntity<>(fileData, null), String.class);
-                }else if(fileName.endsWith("png")||fileName.endsWith("jpg")||fileName.endsWith("jpeg")){
-                    r = restTemplate.postForEntity(resumeUrl + analysisImgApi + fileName
-                            , new HttpEntity<>(fileData, null), String.class);
-                }else {
+                var type = typeMap.get(fileName.substring(fileName.lastIndexOf(".")+1));
+                if(type==null){
                     byteArrayOutputStream.close();
                     zis.closeEntry();
                     continue;
                 }
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    var information = mapper.readValue(r.getBody(),ResumeInformation.class);
-                    information.setCreateUid(fileCreateUid);
-                    information.setCreateDate(fileTime);
-                    mongoTemplate.insert(information);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
+                map.put(fileType,type);
+                map.put(Content.fileName,fileName);
+                map.put(Content.fileData,fileData);
+                ResumeInformationHandler(map);
                 //处理完成
                 byteArrayOutputStream.close();
                 zis.closeEntry();
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void ResumeInformationHandler(Map<String,Object> i){
+        ResponseEntity<String> r;
+        if((int)i.get(fileType)==DOCX) {
+            r = restTemplate.postForEntity(resumeUrl + analysisDocxApi + i.get(fileName)
+                    , new HttpEntity<>(i.get(fileData), null), String.class);
+        }else if((int)i.get(fileType)==IMG){
+            r = restTemplate.postForEntity(resumeUrl + analysisImgApi + i.get(fileName)
+                    , new HttpEntity<>(i.get(fileData), null), String.class);
+        }else {
+            return;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            var information = mapper.readValue(r.getBody(),ResumeInformation.class);
+            information.setCreateUid((String) i.get(fileCreateUid));
+            information.setCreateDate((Date) i.get(fileTime));
+            mongoTemplate.insert(information);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -10,9 +10,9 @@ import java.text.ParseException;
 import java.util.List;
 
 public interface ResumeService {
-    ResponseResult<String> uploadFile(int type, byte[] data, String originalFilename);
+    ResponseResult<String> uploadFile(byte[] data, String originalFilename);
 
-    public ResponseResult<String> uploadCompressFile(MultipartFile resume) throws IOException;
+    public ResponseResult<String> uploadCompressFile(byte[] data, String originalFilename) throws IOException;
 
     ResponseResult<List<ResumeInformation>> getResumeByUid();
 

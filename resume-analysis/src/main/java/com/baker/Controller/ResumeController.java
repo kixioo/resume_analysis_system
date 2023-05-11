@@ -20,13 +20,12 @@ public class ResumeController {
 
     @PostMapping("/compressUploadFile")
     public ResponseResult<String> uploadCompressFile(@RequestPart("resume") MultipartFile resume) throws IOException {
-        return resumeService.uploadCompressFile(resume);
+        return resumeService.uploadCompressFile(resume.getBytes(),resume.getOriginalFilename());
     }
 
-    @PostMapping("/uploadFile/{type}")
-    public ResponseResult<String> uploadFile(@PathVariable int type,
-                                             @RequestPart("resume") MultipartFile resume) throws IOException {
-        return resumeService.uploadFile(type,resume.getBytes(),resume.getOriginalFilename());
+    @PostMapping("/uploadFile")
+    public ResponseResult<String> uploadFile(@RequestPart("resume") MultipartFile resume) throws IOException {
+        return resumeService.uploadFile(resume.getBytes(),resume.getOriginalFilename());
     }
 
 

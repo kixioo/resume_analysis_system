@@ -27,6 +27,10 @@ public class ResponseResult<T> {
         return new ResponseResult<T>(200,o);
     }
 
+    public static <T> ResponseResult<T>  fail(T o){
+        return new ResponseResult<T>(400,o);
+    }
+
     public ResponseResult(Integer code, T data) {
         this.code = code;
         this.data = data;
