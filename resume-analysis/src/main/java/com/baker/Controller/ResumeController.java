@@ -18,14 +18,14 @@ public class ResumeController {
     @Resource
     ResumeService resumeService;
 
-    @PostMapping("/compressUploadFile")
-    public ResponseResult<String> uploadCompressFile(@RequestPart("resume") MultipartFile resume) throws IOException {
-        return resumeService.uploadCompressFile(resume.getBytes(),resume.getOriginalFilename());
+    @PostMapping("/compressUploadFile/{job}")
+    public ResponseResult<String> uploadCompressFile(@RequestPart("resume") MultipartFile resume, @PathVariable String job) throws IOException {
+        return resumeService.uploadCompressFile(resume.getBytes(),resume.getOriginalFilename(),job);
     }
 
-    @PostMapping("/uploadFile")
-    public ResponseResult<String> uploadFile(@RequestPart("resume") MultipartFile resume) throws IOException {
-        return resumeService.uploadFile(resume.getBytes(),resume.getOriginalFilename());
+    @PostMapping("/uploadFile/{job}")
+    public ResponseResult<String> uploadFile(@RequestPart("resume") MultipartFile resume, @PathVariable String job) throws IOException {
+        return resumeService.uploadFile(resume.getBytes(),resume.getOriginalFilename(),job);
     }
 
 

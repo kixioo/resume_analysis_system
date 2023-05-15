@@ -2,6 +2,7 @@ package com.baker.Service.Impl;
 
 import com.baker.Service.ResumeService;
 import com.baker.Utils.Content;
+import com.baker.Utils.SnowflakeIdGenerator;
 import com.baker.common.ResponseResult;
 import com.baker.domain.LoginUser;
 import com.baker.pojo.CallableList;
@@ -44,6 +45,8 @@ public class ResumeServiceImpl implements ResumeService {
     @Resource
     private MongoTemplate mongoTemplate;
 
+    SnowflakeIdGenerator idGenerator = new SnowflakeIdGenerator(5);
+
     private final CallableList<Map<String ,Object>> analysisList;
 
     private final CallableList<Map<String ,Object>> zipAnalysisList;
@@ -61,7 +64,7 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public ResponseResult<String> uploadFile(byte[] data, String originalFilename) {
+    public ResponseResult<String> uploadFile(byte[] data, String originalFilename, String job) {
         String uid = ((LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser().getPhoneNumber();
         Integer type = typeMap.get(originalFilename.substring(originalFilename.lastIndexOf(".")+1));
         if(type==null) return ResponseResult.fail("fail");
@@ -69,15 +72,17 @@ public class ResumeServiceImpl implements ResumeService {
         map.put(fileName,originalFilename);
         map.put(fileType, type);
         map.put(fileData,data);
+        map.put(fileJid,job);
         analysisList.add(map);
         return ResponseResult.ok("success");
     }
 
     @Override
-    public ResponseResult<String> uploadCompressFile(byte[] data, String originalFilename) {
+    public ResponseResult<String> uploadCompressFile(byte[] data, String originalFilename, String job) {
         String uid = ((LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser().getPhoneNumber();
         var map = getParameterMap(uid);
         map.put(fileData,data);
+        map.put(fileJid,job);
         zipAnalysisList.add(map);
         return ResponseResult.ok("success");
     }
@@ -173,6 +178,8 @@ public class ResumeServiceImpl implements ResumeService {
             var information = mapper.readValue(r.getBody(),ResumeInformation.class);
             information.setCreateUid((String) i.get(fileCreateUid));
             information.setCreateDate((Date) i.get(fileTime));
+            information.setRid(idGenerator.nextId());
+            information.setJid((Long) i.get(fileJid));
             mongoTemplate.insert(information);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

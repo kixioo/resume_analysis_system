@@ -10,15 +10,17 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResumeInformation {
-    public String fileName;
-    public String name;
-    public String degree;
-    public String age;
-    public String phoneNumber;
-    public String school;
-    public String timeOfGraduation;
-    public String jobObjective;
-    public String workExperience;
-    public String createUid;
-    public Date createDate;
+    private long jid;
+    private long rid;
+    private String fileName;
+    private String name;
+    private String degree;
+    private String age;
+    private String phoneNumber;
+    private String school;
+    private String timeOfGraduation;
+    private String jobObjective;
+    private String workExperience;
+    private String createUid;
+    private Date createDate;
 }

@@ -13,6 +13,8 @@ public class Content {
     public static final String fileCreateUid = "createUid";
     public static final String fileType = "type";
 
+    public static final String fileJid = "jid";
+
     public static final int DOCX = 1;
 
     private static final int IMG = 2;

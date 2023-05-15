@@ -9,6 +9,7 @@ import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -19,6 +20,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @SpringBootApplication
 //@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @MapperScan("com.baker.mapper")
+@EnableSwagger2
 public class ResumeAnalysisApplication {
 
     public static void main(String[] args) {
