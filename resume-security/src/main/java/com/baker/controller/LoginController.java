@@ -1,8 +1,10 @@
 package com.baker.controller;
 
 import com.baker.common.ResponseResult;
+import com.baker.domain.FormCheck;
 import com.baker.domain.User;
 import com.baker.service.LoginServcie;
+import com.baker.service.impl.LoginServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginController {
 
     @Resource
-    private LoginServcie loginServcie;
+    private LoginServiceImpl loginServcie;
 
     @PostMapping("/user/login")
     public ResponseResult login(@RequestBody User user){
@@ -24,5 +26,6 @@ public class LoginController {
     public ResponseResult logout(){
         return loginServcie.logout();
     }
+
 
 }

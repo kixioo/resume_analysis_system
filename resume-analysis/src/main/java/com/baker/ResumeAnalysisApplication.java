@@ -18,8 +18,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-//@SpringBootApplication
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
+@SpringBootApplication
+//@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @MapperScan("com.baker.mapper")
 @EnableOpenApi
 public class ResumeAnalysisApplication {

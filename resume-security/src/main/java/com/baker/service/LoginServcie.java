@@ -1,6 +1,7 @@
 package com.baker.service;
 
 import com.baker.common.ResponseResult;
+import com.baker.domain.FormCheck;
 import com.baker.domain.User;
 
 import javax.servlet.http.HttpServletResponse;

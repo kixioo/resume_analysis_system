@@ -2,11 +2,17 @@ package com.baker.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import com.baker.common.ResponseResult;
+import com.baker.domain.FormCheck;
 import com.baker.domain.LoginUser;
 import com.baker.domain.User;
 import com.baker.service.LoginServcie;
+import com.baker.service.SendMessage;
+import com.baker.service.SignupService;
+import com.baker.service.UserService;
 import com.baker.until.JwtUtil;
 import com.baker.until.RedisCache;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,11 +28,22 @@ import java.util.Objects;
 @Service
 public class LoginServiceImpl implements LoginServcie {
 
+    private FormCheck formCheck = new FormCheck();
+
+    public FormCheck getFormCheck() {
+        return formCheck;
+    }
+
     @Resource
     private AuthenticationManager authenticationManager;
     @Resource
     private RedisCache redisCache;
-
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private SignupService signupService;
+    @Autowired
+    private SendMessage sendMessage;
     @Override
     public ResponseResult login(User user) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getPhoneNumber(),user.getPassword());

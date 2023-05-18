@@ -1,25 +1,27 @@
 spring:
 
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
 
   datasource:
-    url: jdbc:mysql://192.168.220.130/test1?useSSL=false&characterEncoding=utf-8&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://192.168.80.128/baker?useSSL=false&characterEncoding=utf-8&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
-    password: 123456789a
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 
   redis:
-    host: 192.168.220.130
+    host: 192.168.80.128
 
   data:
     mongodb:
-      host: 192.168.220.130
-      username: clwlc
-      password: "123456"
-      database: clwlc
+      host: 192.168.80.128
+      username: mongoadmin
+      password: secret
+      database: test
+      authentication-database: admin
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
