@@ -64,7 +64,7 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public ResponseResult<String> uploadFile(byte[] data, String originalFilename, String job) {
+    public ResponseResult<String> uploadFile(byte[] data, String originalFilename, long job) {
         String uid = ((LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser().getPhoneNumber();
         Integer type = typeMap.get(originalFilename.substring(originalFilename.lastIndexOf(".")+1));
         if(type==null) return ResponseResult.fail("fail");
@@ -78,7 +78,7 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public ResponseResult<String> uploadCompressFile(byte[] data, String originalFilename, String job) {
+    public ResponseResult<String> uploadCompressFile(byte[] data, String originalFilename, long job) {
         String uid = ((LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser().getPhoneNumber();
         var map = getParameterMap(uid);
         map.put(fileData,data);
@@ -179,7 +179,7 @@ public class ResumeServiceImpl implements ResumeService {
             information.setCreateUid((String) i.get(fileCreateUid));
             information.setCreateDate((Date) i.get(fileTime));
             information.setRid(idGenerator.nextId());
-            information.setJid((Long) i.get(fileJid));
+            information.setJid((long) i.get(fileJid));
             mongoTemplate.insert(information);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

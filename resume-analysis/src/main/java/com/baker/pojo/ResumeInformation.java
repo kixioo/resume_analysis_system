@@ -10,7 +10,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResumeInformation {
-    private long jid;
+    private long  jid;
     private long rid;
     private String fileName;
     private String name;

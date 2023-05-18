@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JobInformation {
-    private long jid;
+    private long  jid;
     private String name;
     private List<String> responsibilities;
     private List<String> require;
