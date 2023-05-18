@@ -1,0 +1,52 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<form id="myForm" action="http://127.0.0.1:8080/acount/updateAvatar" method="post" enctype="multipart/form-data">
+    <div><input type="file" multiple="multiple" accept="*" name="avatar"></div>
+    <div><input type="submit" value="上传头像"></div>
+    <img id="avatarImg" src="data:image/jpeg;base64,{{base64Avatar}}" alt="Avatar">
+
+</form>
+
+
+<script>
+    var base64Avatar = "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";
+    var imgElement = document.getElementById("avatarImg");
+    imgElement.src = "data:image/jpeg;base64," + base64Avatar;
+
+    var t1;
+    sendPostRequest()
+    const form = document.getElementById("myForm");
+    form.addEventListener("submit", function (event) {
+        event.preventDefault(); // 阻止默认表单提交行为
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", form.action, true);
+        xhr.setRequestHeader("token", t1);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log(xhr.responseText);
+            }
+        };
+        const formData = new FormData(form);
+        xhr.send(formData);
+    });
+
+    function sendPostRequest() {
+        const xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+        const url = "http://127.0.0.1:8080/user/login";
+        const data = {"phoneNumber":"18583155673","password":"luodeng1112"}
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    t1 = xhr.responseText;
+                    t1 = JSON.parse(t1)
+                    t1 = t1.data.token
+                } else {
+                    console.error(xhr.statusText);
+                }
+            }
+        }
+        xhr.send(JSON.stringify(data));
+    }
+</script>

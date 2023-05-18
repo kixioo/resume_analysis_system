@@ -1,0 +1,67 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<form id="myForm" action="http://127.0.0.1:8080/resume/uploadFile/1" method="post" enctype="multipart/form-data">
+    <div><input type="file" multiple="multiple" accept="*" name="resume"></div>
+    <div><input type="submit" value="上传docx"></div>
+</form>
+
+<form id="myForm1" action="http://127.0.0.1:8080/resume/compressUploadFile" method="post" enctype="multipart/form-data">
+    <div><input type="file" multiple="multiple" accept="*" name="resume"></div>
+    <div><input type="submit" value="上传docx"></div>
+</form>
+
+<button type="button" onclick="sendPostRequest()">登录</button>
+<script>
+    var t1
+    sendPostRequest()
+
+    const form = document.getElementById("myForm");
+    form.addEventListener("submit", function (event) {
+        event.preventDefault(); // 阻止默认表单提交行为
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", form.action, true);
+        // xhr.setRequestHeader("token", t1);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log(xhr.responseText);
+            }
+        };
+        const formData = new FormData(form);
+        xhr.send(formData);
+    });
+
+    const form1 = document.getElementById("myForm1");
+    form1.addEventListener("submit", function (event) {
+        event.preventDefault(); // 阻止默认表单提交行为
+        const xhr1 = new XMLHttpRequest();
+        xhr1.open("POST", form1.action, true);
+        xhr1.setRequestHeader("token", t1);
+        xhr1.onreadystatechange = function () {
+            if (xhr1.readyState === 4 && xhr1.status === 200) {
+                console.log(xhr1.responseText);
+            }
+        };
+        const formData1 = new FormData(form1);
+        xhr1.send(formData1);
+    });
+
+    function sendPostRequest() {
+        const xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+        const url = "http://127.0.0.1:8080/user/login";
+        const data = {"phoneNumber":"18583155673","password":"luodeng1112"}
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    t1 = xhr.responseText;
+                    t1 = JSON.parse(t1)
+                    t1 = t1.data.token
+                } else {
+                    console.error(xhr.statusText);
+                }
+            }
+        }
+        xhr.send(JSON.stringify(data));
+    }
+</script>
