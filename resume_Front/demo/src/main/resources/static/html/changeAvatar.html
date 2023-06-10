@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>改头像</title>
+    <link rel="stylesheet" href="../js/layui/css/layui.css"/>
+</head>
+<body>
+  <button type="button" class="layui-btn layui-btn-primary" lay-on="test-iframe-handle">
+    iframe 的父子操作
+    <span id="ID-test-iframe-mark"></span>
+  </button>
+  <script src="//unpkg.com/layui@2.8.6/dist/layui.js"></script>
+  <script>
+    layui.use(function() {
+      var $ = layui.$;
+      var layer = layui.layer;
+      var util = layui.util;
+      // 事件
+      util.on('lay-on', {
+        'test-iframe-handle': function () {
+          layer.open({
+            type: 2,
+            area: ['680px', '520px'],
+            content: '/layer/test/iframe.html',
+            fixed: false, // 不固定
+            maxmin: true,
+            shadeClose: true,
+            btn: ['获取表单值', '取消'],
+            btnAlign: 'c',
+            yes: function (index, layero) {
+              // 获取 iframe 的窗口对象
+              var iframeWin = window[layero.find('iframe')[0]['name']];
+              var elemMark = iframeWin.$('#mark'); // 获得 iframe 中某个输入框元素
+              var value = elemMark.val();
+
+              if ($.trim(value) === '') return elemMark.focus();
+              // 显示获得的值
+              layer.msg('获得 iframe 中的输入框标记值：' + value);
+            }
+          });
+        }
+      })
+    })
+  </script>
+
+
+</body>
+</html>

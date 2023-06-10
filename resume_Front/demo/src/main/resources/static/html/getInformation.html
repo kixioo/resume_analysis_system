@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:text-align="http://www.w3.org/1999/xhtml" xmlns:margin-right="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>简历信息提取</title>
+    <link rel="stylesheet" href="../js/layui/css/layui.css"/>
+    <link href="//unpkg.com/layui@2.8.6/dist/css/layui.css" rel="stylesheet">
+    <link>
+</head>
+<body bgcolor="E4E7ED">
+
+
+
+
+
+
+
+
+    <script type="text/javascript" src="../js/layui/layui.js"></script>
+    <script>
+        layui.use(function(){
+            var upload = layui.upload;
+            var $ = layui.$;
+            // 渲染
+            upload.render({
+                elem: '#ID-upload-demo-drag',
+                url: 'https://httpbin.org/post', // 此处用的是第三方的 http 请求演示，实际使用时改成您自己的上传接口即可。
+                done: function(res){
+                    layer.msg('上传成功');
+                    console.log(res)
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
