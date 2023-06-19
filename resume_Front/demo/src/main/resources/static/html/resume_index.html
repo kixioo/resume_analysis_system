@@ -6,8 +6,13 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="../js/layui/css/layui.css" rel="stylesheet">
-    <link href="//cdn.staticfile.org/layui/2.8.4/css/layui.css" rel="stylesheet">
+    <link href="//cdn.staticfile.org/layui/2.8.6/css/layui.css" rel="stylesheet">
+
+    <style>
+        .layadmin-iframe {
+            width: 98%;
+        }
+    </style>
 </head>
 <body>
 <div class="layui-layout layui-layout-admin">
@@ -28,11 +33,11 @@
             <li class="layui-nav-item layui-hide-xs"><a href="javascript:;">nav 2</a></li>
             <li class="layui-nav-item layui-hide-xs"><a href="javascript:;">nav 3</a></li>
             <li class="layui-nav-item">
-                <a href="javascript:;">nav groups</a>
+                <a href="javascript:;">关于我们</a>
                 <dl class="layui-nav-child">
-                    <dd><a href="javascript:;">menu 11</a></dd>
-                    <dd><a href="javascript:;">menu 22</a></dd>
-                    <dd><a href="javascript:;">menu 33</a></dd>
+                    <dd><a href="javascript:;">平台介绍</a></dd>
+                    <dd><a href="javascript:;">赞助通道</a></dd>
+                    <dd><a href="javascript:;">更多服务</a></dd>
                 </dl>
             </li>
         </ul>
@@ -58,24 +63,40 @@
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
             <ul class="layui-nav layui-nav-tree" lay-filter="test" >
-                <li class="layui-nav-item layui-nav-itemed"><a href="../html/main.html" target="menuFrame">主页</a></li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="menuItem" href="javascript:;" title="main.html">主页</a>
+                </li>
                 <li class="layui-nav-item">
                     <a href="javascript:;">简历管理</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="../html/getInformation.html" target="menuFrame">简历信息提取</a></dd>
-                        <dd><a href="../html/resume_analysis.html" target="menuFrame">简历分析</a></dd>
+                        <dd><a class="menuItem" href="javascript:;" title="getInformation.html">简历信息提取</a></dd>
+                        <dd><a class="menuItem" href="javascript:;" title="resume_analysis.html">简历分析</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item"><a href="../html/resume_base.html" target="menuFrame">简历库</a></li>
-                <li class="layui-nav-item"><a href="../html/historicalRecord.html" target="menuFrame">历史记录</a></li>
-                <li class="layui-nav-item"><a href="../html/setting.html" target="menuFrame">系统设置</a></li>
+                <li class="layui-nav-item">
+                    <a class="menuItem" href="javascript:;" title="resume_base.html">简历库</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="menuItem" href="javascript:;" title="historicalRecord.html">历史记录</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="menuItem" href="javascript:;" title="setting.html">系统设置</a>
+                </li>
             </ul>
         </div>
     </div>
     <div class="layui-body">
         <!-- 内容主体区域 -->
-        <iframe id="menuFrame" name="menuFrame" src="../html/main.html" style="overflow: visible;" width="100%" height="100%">
-        </iframe>
+        <div class="layui-tab layui-tab-brief" lay-filter="contentHandle" lay-allowclose="true">
+            <ul class="layui-tab-title">
+                <li class="layui-this" lay-id="11">你好！</li>
+            </ul>
+            <ul class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <iframe src="hellodemo.html" class="layadmin-iframe" name="mainFrame" id="mainFrame" ></iframe>
+                </div>
+            </ul>
+        </div>
 
     </div>
     <div class="layui-footer">
@@ -84,7 +105,7 @@
     </div>
 </div>
 
-<script src="//cdn.staticfile.org/layui/2.8.4/layui.js"></script>
+<script src="//cdn.staticfile.org/layui/2.8.6/layui.js"></script>
 <script>
     //JS
     layui.use(['element', 'layer', 'util'], function(){
@@ -92,6 +113,47 @@
         var layer = layui.layer;
         var util = layui.util;
         var $ = layui.$;
+
+        let FrameWH = function(){
+            let h=$(window).height()-180;
+            $("iframe").css("height",h+"px");
+            $("iframe").css("border",+"0");
+        }
+
+        $(window).resize(function(){
+            FrameWH();
+        });
+
+        FrameWH();
+
+        // 构建一个Tab打开列表
+        let tabList=new Map();
+
+        //为按钮绑定一个单击事件
+        $('.menuItem').click(function (event){
+            let label=this.text;
+
+            if(!tabList.has(label)){
+                let content='<div className="layui-tab-item layui-show">'+
+                    '<iframe src="'+this.title+'" class="layadmin-iframe"></iframe>'+
+                    '</div>'
+                tabList.set(label,this.title);
+                element.tabAdd('contentHandle',{
+                    title:label,
+                    content:content,
+                    id:label,
+                    change:true
+                });
+                FrameWH();
+            }else{
+                element.tabChange('contentHandle',label);
+            }
+        });
+
+
+        element.on('tabDelete(contentHandle)',function (data){
+            tabList.delete(data.elem.context.parentElement.innerText);
+        });
 
         //头部事件
         util.event('lay-header-event', {
